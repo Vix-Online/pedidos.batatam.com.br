@@ -2,16 +2,14 @@
 <html>
 <head>
 	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<title>Pedidos - Batatam</title>
 	<link rel="manifest" href="/manifest.json">
 	<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
 	<style type="text/css">
-		html, body{
-			width: 100vw;
-            height: 100vh;
-		}
-		
         html, body, iframe {
+            width: 100vw;
+            height: 100vh;
 			margin: 0;
 			padding: 0;
 			border: 0;
@@ -30,27 +28,11 @@
 	</script>
 </head>
 <body>
-	<iframe src="https://contato.vip/CardapioBatatam" id="iframe" frameborder="0" allowfullscreen></iframe>
+	<iframe src="https://contato.vip/CardapioBatatam" frameborder="0" allowfullscreen></iframe>
 	
 	<script>
 	if ('serviceWorker' in navigator) {
 		navigator.serviceWorker.register('/service-worker.js');
-	}
-	
-	const iframe = document.getElementById("iframe");
-		
-	function resizeIFrame(){
-		const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-		const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-
-		iframe.height = vh + "px";
-		iframe.width = vw + "px";
-	}
-	
-	resizeIFrame();
-		
-	window.onresize = function(event) { 
-		resizeIFrame();
 	}
 	</script>
 </body>
