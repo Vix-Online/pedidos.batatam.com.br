@@ -27,10 +27,27 @@
 	</script>
 </head>
 <body>
-	<iframe src="https://contato.vip/CardapioBatatam"></iframe>
+	<iframe src="https://contato.vip/CardapioBatatam" id="iframe" frameborder="0" allowfullscreen></iframe>
+	
 	<script>
 	if ('serviceWorker' in navigator) {
 		navigator.serviceWorker.register('/service-worker.js');
+	}
+	
+	const iframe = document.getElementById("iframe");
+		
+	function resizeIFrame(){
+		const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+		const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+
+		iframe.height = vh;
+		iframe.width = vw;
+	}
+	
+	resizeIFrame();
+		
+	window.onresize = function(event) { 
+		resizeIFrame();
 	}
 	</script>
 </body>
