@@ -6,6 +6,7 @@
 	<title>Pedidos - Batatam</title>
 	<link rel="manifest" href="/manifest.json">
 	<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 	<style type="text/css">
         html, body, iframe {
             width: 100vw;
@@ -14,6 +15,17 @@
 			padding: 0;
 			border: 0;
         }
+		
+		#notificacoes{
+			position: absolute;
+			top: 0;
+			left: 0;
+			height: 100vh;
+			width: 100vw;
+			background: #fff;
+			padding: 20px;
+			display: none;
+		}
     </style>
 	<script>
 	  window.OneSignal = window.OneSignal || [];
@@ -21,19 +33,100 @@
 		OneSignal.init({
 		  appId: "c1d496eb-767d-46c7-9e05-6b281d394608",
 		  notifyButton: {
-			enable: true,
+			enable: false,
 		  },
 		});
 	  });
 	</script>
 </head>
 <body>
+	<div id="notificacoes">
+		<h1>Gostaria de receber notificações?</h1>
+		<button type="button" class="btn btn-primary btn-lg btn-block" onClick="javascript:onManageWebPushSubscriptionButtonClicked(this);">É claro!</button>
+		<button type="button" class="btn btn-secondary btn-lg btn-block">Não gosto de promoções</button>
+	</div>
 	<iframe src="https://contato.vip/CardapioBatatam" frameborder="0" allowfullscreen></iframe>
 	
 	<script>
 	if ('serviceWorker' in navigator) {
 		navigator.serviceWorker.register('/service-worker.js');
 	}
+		
+	function onManageWebPushSubscriptionButtonClicked(event) {
+        getSubscriptionState().then(function(state) {
+            if (state.isPushEnabled) {
+				if (window.confirm("Você realmente quer sair?")) {
+					alert("Notificações desativadas...");
+					OneSignal.setSubscription(false);
+				}
+            } else {
+                if (state.isOptedOut) {
+					alert("Notificações ativadas com sucesso.");
+                    OneSignal.setSubscription(true);
+                } else {
+					if (window.confirm("Deseja ser notificacdo sempre que for lançada uma transação?")) {
+						alert("Permita as notificações");
+						OneSignal.registerForPushNotifications();
+					};
+                }
+            }
+        });
+//        event.preventDefault();
+    }
+
+    function updateMangeWebPushSubscriptionButton(buttonSelector) {
+        var hideWhenSubscribed = false;
+        var subscribeText = "<i class='material-icons'>notifications_off</i>";
+        var unsubscribeText = "<i class='material-icons'>notifications_active</i>";
+
+        getSubscriptionState().then(function(state) {
+            var buttonText = !state.isPushEnabled || state.isOptedOut ? subscribeText : unsubscribeText;
+
+            var element = document.querySelector(buttonSelector);
+            if (element === null) {
+                return;
+            }
+
+            element.removeEventListener('click', onManageWebPushSubscriptionButtonClicked);
+            element.addEventListener('click', onManageWebPushSubscriptionButtonClicked);
+            $(element).html(buttonText);
+
+            if (state.hideWhenSubscribed && state.isPushEnabled) {
+                element.style.display = "none";
+            } else {
+                element.style.display = "";
+            }
+        });
+    }
+
+    function getSubscriptionState() {
+        return Promise.all([
+          OneSignal.isPushNotificationsEnabled(),
+          OneSignal.isOptedOut()
+        ]).then(function(result) {
+            var isPushEnabled = result[0];
+            var isOptedOut = result[1];
+
+            return {
+                isPushEnabled: isPushEnabled,
+                isOptedOut: isOptedOut
+            };
+        });
+    }
+
+    var OneSignal = OneSignal || [];
+    var buttonSelector = "#push";
+
+    OneSignal.push(function() {
+        if (!OneSignal.isPushNotificationsSupported()) {
+            return;
+        }
+		
+		updateMangeWebPushSubscriptionButton(buttonSelector);
+        OneSignal.on("subscriptionChange", function(isSubscribed) {
+            updateMangeWebPushSubscriptionButton(buttonSelector);
+        });
+    });
 	</script>
 </body>
 </html>
