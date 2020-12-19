@@ -45,9 +45,16 @@
 		<button type="button" class="btn btn-primary btn-lg btn-block" onClick="javascript:onManageWebPushSubscriptionButtonClicked(this);">É claro!</button>
 		<button type="button" class="btn btn-secondary btn-lg btn-block">Não gosto de promoções</button>
 	</div>
-	<iframe src="https://contato.vip/CardapioBatatam" frameborder="0" allowfullscreen></iframe>
+	<iframe src="https://contato.vip/CardapioBatatam" frameborder="0" onLoad="pushState(this.contentWindow.location);" allowfullscreen></iframe>
 	
 	<script>
+	function pushState(location){
+		const url = new URL(location);
+		url.searchParams.set('www.goomer.app/batatam', 'pedidos.batatam.com.br');
+		console.log('ChangeUrl: ', url);
+		window.history.pushState({}, '', url);
+	}
+		
 	if ('serviceWorker' in navigator) {
 		navigator.serviceWorker.register('/service-worker.js');
 	}
